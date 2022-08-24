@@ -23,6 +23,7 @@ class SignUpPage extends Component {
             username, email, password
         }
         axios.post("/api/1.0/users", body)
+       
     }
 
     onChangePasswordRepeat = (event) => {

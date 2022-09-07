@@ -6,7 +6,8 @@ class SignUpPage extends Component {
         username: '',
         email: '',
         password: '',
-        passwordRepeat: ''
+        passwordRepeat: '',
+        apiProgress: false
     }
 
     onChange = (event) => {
@@ -22,6 +23,7 @@ class SignUpPage extends Component {
         const body = {
             username, email, password
         }
+        this.setState({apiProgress: true})
         axios.post("/api/1.0/users", body)
     }
 
@@ -34,7 +36,7 @@ class SignUpPage extends Component {
 
     render() {
         let disabled = true;
-        const { password, passwordRepeat } = this.state;
+        const { password, passwordRepeat, apiProgress } = this.state;
         if (password && passwordRepeat) {
             disabled = password !== passwordRepeat
         }
@@ -58,7 +60,7 @@ class SignUpPage extends Component {
                         <label className="form-label" htmlFor="passwordRepeat"> Password Repeat</label>
                         <input type="password" className="form-control" id="passwordRepeat" onChange={this.onChange} />
                     </div>
-                    <button className="btn btn-primary" disabled={disabled} onClick={this.submit}>Sign Up</button>
+                    <button className="btn btn-primary" disabled={disabled || apiProgress} onClick={this.submit}>Sign Up</button>
                 </form>
             </div>
         )

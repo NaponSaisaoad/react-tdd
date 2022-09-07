@@ -53,13 +53,23 @@ describe('Sign Up Page', () => {
         })
     })
     describe("Interractions", () => {
-        it("enables the button when password and password repeat fields have same value", () => {
+        let button;
+
+        const setup = () => {
             render(<SignUpPage/>);
+            const usernameInput = screen.getByLabelText('Username');
+            const emailInput = screen.getByLabelText('Email');
             const passwordInput = screen.getByLabelText('Password');
             const passwordRepeatInput = screen.getByLabelText('Password Repeat');
+            useEvent.type(usernameInput, "user1");
+            useEvent.type(emailInput, "user1@mail.com");
             useEvent.type(passwordInput, "P4ssword");
             useEvent.type(passwordRepeatInput, "P4ssword");
-            const button = screen.queryByRole('button', {name: 'Sign Up'});
+            button = screen.queryByRole('button', {name: 'Sign Up'});
+        }
+
+        it("enables the button when password and password repeat fields have same value", () => {
+            setup();
             expect(button).toBeEnabled();
         })
         it("sends username, email and password to backend after clicking the button", async () => {
@@ -71,16 +81,7 @@ describe('Sign Up Page', () => {
             })
             );
             server.listen();
-            render(<SignUpPage/>);
-            const usernameInput = screen.getByLabelText('Username');
-            const emailInput = screen.getByLabelText('Email');
-            const passwordInput = screen.getByLabelText('Password');
-            const passwordRepeatInput = screen.getByLabelText('Password Repeat');
-            useEvent.type(usernameInput, "user1");
-            useEvent.type(emailInput, "user1@mail.com");
-            useEvent.type(passwordInput, "P4ssword");
-            useEvent.type(passwordRepeatInput, "P4ssword");
-            const button = screen.queryByRole('button', {name: 'Sign Up'});
+            setup();
             useEvent.click(button);
             
             await new Promise((resolve) => setTimeout(resolve, 500));

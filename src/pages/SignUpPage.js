@@ -60,7 +60,8 @@ class SignUpPage extends Component {
                         <label className="form-label" htmlFor="passwordRepeat"> Password Repeat</label>
                         <input type="password" className="form-control" id="passwordRepeat" onChange={this.onChange} />
                     </div>
-                    <button className="btn btn-primary" disabled={disabled || apiProgress} onClick={this.submit}>Sign Up</button>
+                    <button className="btn btn-primary" disabled={disabled || apiProgress} onClick={this.submit}>
+                    {apiProgress && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}Sign Up</button>
                 </form>
             </div>
         )

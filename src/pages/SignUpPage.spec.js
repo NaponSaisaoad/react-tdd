@@ -92,5 +92,17 @@ describe('Sign Up Page', () => {
                 password: 'P4ssword'
             })
         })
+        it("display spiner while in progress", async () => {
+            setup();
+            useEvent.click(button);
+            const spinner = screen.getByRole('status', {hidden: true})
+            expect(spinner).toBeInTheDocument();
+        })
+        it("does not display spiner while in progress", async () => {
+            setup();
+            useEvent.click(button);
+            const spinner = screen.queryByRole('status')
+            expect(spinner).not.toBeInTheDocument();
+        })
     })
 })

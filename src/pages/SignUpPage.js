@@ -63,7 +63,9 @@ class SignUpPage extends Component {
                     <button className="btn btn-primary" disabled={disabled || apiProgress} onClick={this.submit}>
                     {apiProgress && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}Sign Up</button>
                 </form>
+                <div>Please check you e-email to active your account</div>
             </div>
+            
         )
     }
 }

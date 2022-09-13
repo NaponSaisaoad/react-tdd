@@ -84,7 +84,7 @@ describe("Sign Up Page", () => {
       setup();
       useEvent.click(button);
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await screen.findByText("Please check you e-email to active your account");
 
       expect(requestBody).toEqual({
         username: "user1",
@@ -94,10 +94,12 @@ describe("Sign Up Page", () => {
     });
     it("display spiner after clicking the submit", async () => {
       setup();
+      
       expect(screen.queryByRole("status")).not.toBeInTheDocument();
       useEvent.click(button);
       const spinner = screen.getByRole("status", { hidden: true });
       expect(spinner).toBeInTheDocument();
+      await screen.findByText("Please check you e-email to active your account");
     });
     it("display account activation noticfication afer successful sign up request", async () => {
       const server = setupServer(
@@ -107,9 +109,12 @@ describe("Sign Up Page", () => {
       );
       server.listen();
       setup();
+      const msg = "Please check you e-email to active your account";
+      expect(screen.queryByText(msg)).not.toBeInTheDocument();
       useEvent.click(button);
-      const text = await screen.findByText("Please check you e-email to active your account");
+      const text = await screen.findByText(msg);
       expect(text).toBeInTheDocument();
     });
   });
 });
+

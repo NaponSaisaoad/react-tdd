@@ -54,7 +54,16 @@ describe("Sign Up Page", () => {
   });
   describe("Interractions", () => {
     let button;
+    const server = setupServer(
+      rest.post("/api/1.0/users", (req, res, ctx) => {
+        return res(ctx.status(200));
+      })
+    );
 
+    beforeAll(() => server.listen());
+
+    afterAll(() => server.close());
+    
     const setup = () => {
       render(<SignUpPage />);
       const usernameInput = screen.getByLabelText("Username");
@@ -72,33 +81,7 @@ describe("Sign Up Page", () => {
       setup();
       expect(button).toBeEnabled();
     });
-    it("sends username, email and password to backend after clicking the button", async () => {
-      let requestBody;
-      const server = setupServer(
-        rest.post("/api/1.0/users", (req, res, ctx) => {
-          requestBody = req.body;
-          return res(ctx.status(200));
-        })
-      );
-      server.listen();
-      setup();
-      useEvent.click(button);
-
-      await screen.findByText("Please check you e-email to active your account");
-
-      expect(requestBody).toEqual({
-        username: "user1",
-        email: "user1@mail.com",
-        password: "P4ssword",
-      });
-    });
     it("display account activation noticfication afer successful sign up request", async () => {
-      const server = setupServer(
-        rest.post("/api/1.0/users", (req, res, ctx) => {
-          return res(ctx.status(200));
-        })
-      );
-      server.listen();
       setup();
       const msg = "Please check you e-email to active your account";
       expect(screen.queryByText(msg)).not.toBeInTheDocument();
@@ -107,12 +90,6 @@ describe("Sign Up Page", () => {
       expect(text).toBeInTheDocument();
     });
     it("hides sign up form after successful sign up request", async () => {
-      const server = setupServer(
-        rest.post("/api/1.0/users", (req, res, ctx) => {
-          return res(ctx.status(200));
-        })
-      );
-      server.listen();
       setup();
       const form = screen.getByTestId("form-sign-up");
       useEvent.click(button);

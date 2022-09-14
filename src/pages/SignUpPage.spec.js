@@ -114,6 +114,7 @@ describe("Sign Up Page", () => {
       useEvent.click(button);
       const text = await screen.findByText(msg);
       expect(text).toBeInTheDocument();
+      
     });
   });
 });

@@ -1,5 +1,6 @@
 import { Component } from "react";
 import axios from "axios";
+import Input from "./components/input";
 
 class SignUpPage extends Component {
     state = {
@@ -54,11 +55,7 @@ class SignUpPage extends Component {
                         <div className="card-herder">
                             <h1>Sign Up</h1>
                         </div>
-                        <div className="mb-3">
-                            <label htmlFor="username" className="form-label"> Username </label>
-                            <input id="username" className="form-control" onChange={this.onChange} />
-                            <span>{errors.username}</span>
-                        </div>
+                        <Input id="username" label="Username" onChange={this.onChange} help={errors.username}/>
                         <div className="mb-3">
                             <label className="form-label" htmlFor="email"> Email </label>
                             <input id="email" className="form-control" onChange={this.onChange} />

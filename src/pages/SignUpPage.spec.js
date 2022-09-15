@@ -54,11 +54,18 @@ describe("Sign Up Page", () => {
   });
   describe("Interractions", () => {
     let button;
+    let counter = 0;
     const server = setupServer(
       rest.post("/api/1.0/users", (req, res, ctx) => {
+        counter += 1;
         return res(ctx.status(200));
       })
     );
+
+    beforeEach(() => {
+      counter = 0;
+      server.resetHandlers();
+    })
 
     beforeAll(() => server.listen());
 
@@ -96,7 +103,7 @@ describe("Sign Up Page", () => {
       await waitFor(() => {
         expect(form).not.toBeInTheDocument();
       })
-    }) 
+    })
   });
 });
 

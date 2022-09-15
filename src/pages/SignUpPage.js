@@ -8,7 +8,8 @@ class SignUpPage extends Component {
         password: '',
         passwordRepeat: '',
         apiProgress: false,
-        signUpSuccess: false
+        signUpSuccess: false,
+        errors: ''
     }
 
     onChange = (event) => {
@@ -25,8 +26,12 @@ class SignUpPage extends Component {
             username, email, password
         }
         this.setState({ apiProgress: true })
-        axios.post("/api/1.0/users", body)
         this.setState({ signUpSuccess: true })
+        try {
+            axios.post("/api/1.0/users", body)
+        } catch (error) {
+            this.setState({errors: "Username cannot be null"})
+        }
     }
 
     onChangePasswordRepeat = (event) => {
@@ -38,7 +43,7 @@ class SignUpPage extends Component {
 
     render() {
         let disabled = true;
-        const { password, passwordRepeat, apiProgress, signUpSuccess } = this.state;
+        const { password, passwordRepeat, apiProgress, signUpSuccess, errors } = this.state;
         if (password && passwordRepeat) {
             disabled = password !== passwordRepeat
         }
@@ -52,6 +57,7 @@ class SignUpPage extends Component {
                         <div className="mb-3">
                             <label htmlFor="username" className="form-label"> Username </label>
                             <input id="username" className="form-control" onChange={this.onChange} />
+                            <span>{errors.username}</span>
                         </div>
                         <div className="mb-3">
                             <label className="form-label" htmlFor="email"> Email </label>

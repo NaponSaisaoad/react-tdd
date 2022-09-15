@@ -1,5 +1,5 @@
 import SignUpPage from "./SignUpPage";
-import { render, screen, waitFor, waitForElementToBeRemoved } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import useEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { rest } from "msw";

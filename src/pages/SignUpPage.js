@@ -44,6 +44,7 @@ class SignUpPage extends Component {
     }
 
     render() {
+        const { t } = this.props;
         let disabled = true;
         const { password, passwordRepeat, apiProgress, signUpSuccess, errors } = this.state;
         if (password && passwordRepeat) {
@@ -54,23 +55,23 @@ class SignUpPage extends Component {
                 {!signUpSuccess &&
                     <form className="card mt-5" data-testid="form-sign-up">
                         <div className="card-herder">
-                            <h1>Sign Up</h1>
+                            <h1> { t('signUp')} </h1>
                         </div>
                         <Input id="username" label="Username" onChange={this.onChange} help={errors.username}/>
                         <div className="mb-3">
-                            <label className="form-label" htmlFor="email"> Email </label>
+                            <label className="form-label" htmlFor="email"> {t('email')} </label>
                             <input id="email" className="form-control" onChange={this.onChange} />
                         </div>
                         <div className="mb-3">
-                            <label className="form-label" htmlFor="password"> Password </label>
+                            <label className="form-label" htmlFor="password"> {t('password')} </label>
                             <input type="password" className="form-control" id="password" onChange={this.onChange} />
                         </div>
                         <div className="mb-3">
-                            <label className="form-label" htmlFor="passwordRepeat"> Password Repeat</label>
+                            <label className="form-label" htmlFor="passwordRepeat"> {t('passwordRepeat')}</label>
                             <input type="password" className="form-control" id="passwordRepeat" onChange={this.onChange} />
                         </div>
                         <button className="btn btn-primary" disabled={disabled || apiProgress} onClick={this.submit}>
-                            {apiProgress && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}Sign Up</button>
+                            {apiProgress && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}{t('signUp')}</button>
                     </form>
                 }
                 {signUpSuccess && <div>Please check you e-email to active your account</div>}

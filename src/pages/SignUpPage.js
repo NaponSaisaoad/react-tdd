@@ -1,6 +1,7 @@
 import { Component } from "react";
 import axios from "axios";
 import Input from "./components/input";
+import { withTranslation } from "react-i18next"
 
 class SignUpPage extends Component {
     state = {
@@ -79,4 +80,6 @@ class SignUpPage extends Component {
     }
 }
 
-export default SignUpPage;
+const  SignUpWithTranslation = withTranslation()(SignUpPage);
+
+export default SignUpWithTranslation;

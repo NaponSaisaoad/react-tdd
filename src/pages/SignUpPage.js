@@ -3,6 +3,7 @@ import axios from "axios";
 import Input from "./components/input";
 import { withTranslation } from "react-i18next"
 import LanguageSelector from "./components/LanguageSelector"
+import { signUp } from '../api/apiCalls';
 
 class SignUpPage extends Component {
     state = {
@@ -22,7 +23,7 @@ class SignUpPage extends Component {
         })
     }
 
-    submit = (event) => {
+    submit = async (event) => {
         event.preventDefault();
         const { username, email, password } = this.state;
         const body = {
@@ -31,7 +32,7 @@ class SignUpPage extends Component {
         this.setState({ apiProgress: true })
         this.setState({ signUpSuccess: true })
         try {
-            axios.post("/api/1.0/users", body)
+            await signUp(body);
         } catch (error) {
             this.setState({errors: "Username cannot be null"})
         }

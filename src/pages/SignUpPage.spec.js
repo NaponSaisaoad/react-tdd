@@ -57,7 +57,7 @@ describe("Sign Up Page", () => {
     });
   });
   describe("Interractions", () => {
-    let turkishToggle;
+    let turkishToggle, passwordInput, passwordRepeatInput;;
     let button;
     let counter = 0;
     const server = setupServer(
@@ -142,6 +142,13 @@ describe("Sign Up Page", () => {
       expect(screen.getByLabelText(tr.email)).toBeInTheDocument();
       expect(screen.getByLabelText(tr.password)).toBeInTheDocument();
       expect(screen.getByLabelText(tr.passwordRepeat)).toBeInTheDocument();
+    });
+    it('displays mismatch message for password repeat input', () => {
+      setup();
+      useEvent.type(passwordInput, 'P4ssword');
+      useEvent.type(passwordRepeatInput, 'AnotherP4ssword');
+      const validationError = screen.queryByText('Password mismatch');
+      expect(validationError).toBeInTheDocument();
     });
   });
 });

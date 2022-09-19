@@ -1,5 +1,5 @@
 import SignUpPage from "./SignUpPage";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, waitForElementToBeRemoved } from "@testing-library/react";
 import useEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
@@ -60,6 +60,7 @@ describe("Sign Up Page", () => {
     let turkishToggle, passwordInput, passwordRepeatInput;;
     let button;
     let counter = 0;
+    let acceptLanguageHeader;
     const server = setupServer(
       rest.post("/api/1.0/users", (req, res, ctx) => {
         counter += 1;
@@ -149,6 +150,16 @@ describe("Sign Up Page", () => {
       useEvent.type(passwordRepeatInput, 'AnotherP4ssword');
       const validationError = screen.queryByText('Password mismatch');
       expect(validationError).toBeInTheDocument();
+    });
+    it('sends accept language header as en for outgoing request', async () => {
+      setup();
+      useEvent.type(passwordInput, 'P4ssword');
+      useEvent.type(passwordRepeatInput, 'P4ssword');
+      const button = screen.getByRole('button', { name: en.signUp });
+      const form = screen.queryByTestId('form-sign-up');
+      useEvent.click(button);
+      await waitForElementToBeRemoved(form);
+      expect(acceptLanguageHeader).toBe('en');
     });
   });
 });

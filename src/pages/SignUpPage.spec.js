@@ -4,6 +4,9 @@ import useEvent from "@testing-library/user-event";
 import { setupServer } from "msw/node";
 import { rest } from "msw";
 import "../locale/i18n";
+import en from '../locale/en.json';
+import tr from '../locale/tr.json';
+
 
 describe("Sign Up Page", () => {
   describe("Layout", () => {
@@ -54,6 +57,7 @@ describe("Sign Up Page", () => {
     });
   });
   describe("Interractions", () => {
+    let turkishToggle;
     let button;
     let counter = 0;
     const server = setupServer(
@@ -105,7 +109,6 @@ describe("Sign Up Page", () => {
         expect(form).not.toBeInTheDocument();
       })
     })
-
     const generateValidationError = (field, message) => {
       return rest.post('/api/1.0/users', (req, res, ctx) => {
         return res(
@@ -116,7 +119,6 @@ describe("Sign Up Page", () => {
         );
       });
     };
-
     it('hides spinner and enables button after response received', async () => {
       server.use(
         generateValidationError('username', 'Username cannot be null')
@@ -126,6 +128,20 @@ describe("Sign Up Page", () => {
       await screen.findByText('Username cannot be null');
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
       expect(button).toBeEnabled();
+    });
+    it('displays all text in Turkish after changing the language', () => {
+      setup();
+      useEvent.click(turkishToggle);
+      expect(
+        screen.getByRole('heading', { name: tr.signUp })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: tr.signUp })
+      ).toBeInTheDocument();
+      expect(screen.getByLabelText(tr.username)).toBeInTheDocument();
+      expect(screen.getByLabelText(tr.email)).toBeInTheDocument();
+      expect(screen.getByLabelText(tr.password)).toBeInTheDocument();
+      expect(screen.getByLabelText(tr.passwordRepeat)).toBeInTheDocument();
     });
   });
 });

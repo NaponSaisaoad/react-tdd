@@ -2,6 +2,7 @@ import { Component } from "react";
 import axios from "axios";
 import Input from "./components/input";
 import { withTranslation } from "react-i18next"
+import LanguageSelector from "./components/LanguageSelector"
 
 class SignUpPage extends Component {
     state = {
@@ -75,6 +76,7 @@ class SignUpPage extends Component {
                     </form>
                 }
                 {signUpSuccess && <div>Please check you e-email to active your account</div>}
+                <LanguageSelector/>
             </div>
 
         )

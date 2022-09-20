@@ -1,8 +1,9 @@
-import { render, screen } from '../test/setup';
+import { render, screen, waitForElementToBeRemoved } from '../test/setup';
 import LoginPage from './LoginPage';
 import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import storage from '../state/storage';
 
 let requestBody,
   acceptLanguageHeader,
@@ -85,6 +86,73 @@ describe('Login Page', () => {
       setup();
       expect(button).toBeEnabled();
     });
+
+    it('displays spinner during api call', async () => {
+        setup();
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+        userEvent.click(button);
+        const spinner = screen.getByRole('status');
+        await waitForElementToBeRemoved(spinner);
+      });
+      it('sends email and password to backend after clicking the button', async () => {
+        setup();
+        userEvent.click(button);
+        const spinner = screen.getByRole('status');
+        await waitForElementToBeRemoved(spinner);
+        expect(requestBody).toEqual({
+          email: 'user100@mail.com',
+          password: 'P4ssword'
+        });
+      });
+      it('disables the button when there is an api call', async () => {
+        setup();
+        userEvent.click(button);
+        userEvent.click(button);
+        const spinner = screen.getByRole('status');
+        await waitForElementToBeRemoved(spinner);
+        expect(count).toEqual(1);
+      });
+      it('displays authentication fail message', async () => {
+        setup();
+        userEvent.click(button);
+        const errorMessage = await screen.findByText('Incorrect credentials');
+        expect(errorMessage).toBeInTheDocument();
+      });
+      it('clears authentication fail message when email field is changed', async () => {
+        setup();
+        userEvent.click(button);
+        const errorMessage = await screen.findByText('Incorrect credentials');
+        userEvent.type(emailInput, 'new@mail.com');
+        expect(errorMessage).not.toBeInTheDocument();
+      });
+      it('clears authentication fail message when password field is changed', async () => {
+        setup();
+        userEvent.click(button);
+        const errorMessage = await screen.findByText('Incorrect credentials');
+        userEvent.type(passwordInput, 'newP4ss');
+        expect(errorMessage).not.toBeInTheDocument();
+      });
+      it('stores id, username and image in storage', async () => {
+        server.use(loginSuccess);
+        setup('user5@mail.com');
+        userEvent.click(button);
+        const spinner = screen.queryByRole('status');
+        await waitForElementToBeRemoved(spinner);
+        const storedState = storage.getItem('auth');
+        const objectFields = Object.keys(storedState);
+        expect(objectFields.includes('id')).toBeTruthy();
+        expect(objectFields.includes('username')).toBeTruthy();
+        expect(objectFields.includes('image')).toBeTruthy();
+      });
+      it('stores authorization header value in storage', async () => {
+        server.use(loginSuccess);
+        setup('user5@mail.com');
+        userEvent.click(button);
+        const spinner = screen.queryByRole('status');
+        await waitForElementToBeRemoved(spinner);
+        const storedState = storage.getItem('auth');
+        expect(storedState.header).toBe('Bearer abcdefgh');
+      });
 
   });
 });

@@ -2,6 +2,7 @@ import App from './App';
 import { render, screen } from './test/setup';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import userEvent from '@testing-library/user-event';
 
 const setup = (path) => {
     window.history.pushState({}, '', path);
@@ -78,4 +79,19 @@ describe('Routing', () => {
       expect(page).not.toBeInTheDocument();
     }
   );
+
+  it('displays home page when clicking brand logo', () => {
+    setup('/login');
+    const logo = screen.queryByAltText('Hoaxify');
+    userEvent.click(logo);
+    expect(screen.getByTestId('home-page')).toBeInTheDocument();
+  });
+
+  it('navigates to user page when clicking the username on user list', async () => {
+    setup('/');
+    const user = await screen.findByText('user-in-list');
+    userEvent.click(user);
+    const page = await screen.findByTestId('user-page');
+    expect(page).toBeInTheDocument();
+  });
 });

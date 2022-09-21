@@ -108,5 +108,32 @@ describe('Routing', () => {
       const page = await screen.findByTestId('home-page');
       expect(page).toBeInTheDocument();
     });
+
+    it('displays My Profile link on navbar after successful login', async () => {
+        setup('/login');
+        const myProfileLinkBeforeLogin = screen.queryByRole('link', {
+          name: 'My Profile'
+        });
+        expect(myProfileLinkBeforeLogin).not.toBeInTheDocument();
+        userEvent.type(screen.getByLabelText('E-mail'), 'user5@mail.com');
+        userEvent.type(screen.getByLabelText('Password'), 'P4ssword');
+        userEvent.click(screen.getByRole('button', { name: 'Login' }));
+        await screen.findByTestId('home-page');
+        const myProfileLinkAfterLogin = screen.queryByRole('link', {
+          name: 'My Profile'
+        });
+        expect(myProfileLinkAfterLogin).toBeInTheDocument();
+      });
+      it('displays user page with logged in user id in url after clicking My Profile link', async () => {
+        setupLoggedIn();
+        await screen.findByTestId('home-page');
+        const myProfile = screen.queryByRole('link', {
+          name: 'My Profile'
+        });
+        userEvent.click(myProfile);
+        await screen.findByTestId('user-page');
+        const username = await screen.findByText('user5');
+        expect(username).toBeInTheDocument();
+      });
   });
 });

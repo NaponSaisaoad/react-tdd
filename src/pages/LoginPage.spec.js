@@ -3,6 +3,8 @@ import LoginPage from './LoginPage';
 import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import en from '../locale/en.json';
+import tr from '../locale/tr.json';
 import storage from '../state/storage';
 
 let requestBody,
@@ -88,71 +90,127 @@ describe('Login Page', () => {
     });
 
     it('displays spinner during api call', async () => {
-        setup();
-        expect(screen.queryByRole('status')).not.toBeInTheDocument();
-        userEvent.click(button);
-        const spinner = screen.getByRole('status');
-        await waitForElementToBeRemoved(spinner);
+      setup();
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      userEvent.click(button);
+      const spinner = screen.getByRole('status');
+      await waitForElementToBeRemoved(spinner);
+    });
+    it('sends email and password to backend after clicking the button', async () => {
+      setup();
+      userEvent.click(button);
+      const spinner = screen.getByRole('status');
+      await waitForElementToBeRemoved(spinner);
+      expect(requestBody).toEqual({
+        email: 'user100@mail.com',
+        password: 'P4ssword'
       });
-      it('sends email and password to backend after clicking the button', async () => {
-        setup();
-        userEvent.click(button);
-        const spinner = screen.getByRole('status');
-        await waitForElementToBeRemoved(spinner);
-        expect(requestBody).toEqual({
-          email: 'user100@mail.com',
-          password: 'P4ssword'
-        });
-      });
-      it('disables the button when there is an api call', async () => {
-        setup();
-        userEvent.click(button);
-        userEvent.click(button);
-        const spinner = screen.getByRole('status');
-        await waitForElementToBeRemoved(spinner);
-        expect(count).toEqual(1);
-      });
-      it('displays authentication fail message', async () => {
-        setup();
-        userEvent.click(button);
-        const errorMessage = await screen.findByText('Incorrect credentials');
-        expect(errorMessage).toBeInTheDocument();
-      });
-      it('clears authentication fail message when email field is changed', async () => {
-        setup();
-        userEvent.click(button);
-        const errorMessage = await screen.findByText('Incorrect credentials');
-        userEvent.type(emailInput, 'new@mail.com');
-        expect(errorMessage).not.toBeInTheDocument();
-      });
-      it('clears authentication fail message when password field is changed', async () => {
-        setup();
-        userEvent.click(button);
-        const errorMessage = await screen.findByText('Incorrect credentials');
-        userEvent.type(passwordInput, 'newP4ss');
-        expect(errorMessage).not.toBeInTheDocument();
-      });
-      it('stores id, username and image in storage', async () => {
-        server.use(loginSuccess);
-        setup('user5@mail.com');
-        userEvent.click(button);
-        const spinner = screen.queryByRole('status');
-        await waitForElementToBeRemoved(spinner);
-        const storedState = storage.getItem('auth');
-        const objectFields = Object.keys(storedState);
-        expect(objectFields.includes('id')).toBeTruthy();
-        expect(objectFields.includes('username')).toBeTruthy();
-        expect(objectFields.includes('image')).toBeTruthy();
-      });
-      it('stores authorization header value in storage', async () => {
-        server.use(loginSuccess);
-        setup('user5@mail.com');
-        userEvent.click(button);
-        const spinner = screen.queryByRole('status');
-        await waitForElementToBeRemoved(spinner);
-        const storedState = storage.getItem('auth');
-        expect(storedState.header).toBe('Bearer abcdefgh');
-      });
+    });
+    it('disables the button when there is an api call', async () => {
+      setup();
+      userEvent.click(button);
+      userEvent.click(button);
+      const spinner = screen.getByRole('status');
+      await waitForElementToBeRemoved(spinner);
+      expect(count).toEqual(1);
+    });
+    it('displays authentication fail message', async () => {
+      setup();
+      userEvent.click(button);
+      const errorMessage = await screen.findByText('Incorrect credentials');
+      expect(errorMessage).toBeInTheDocument();
+    });
+    it('clears authentication fail message when email field is changed', async () => {
+      setup();
+      userEvent.click(button);
+      const errorMessage = await screen.findByText('Incorrect credentials');
+      userEvent.type(emailInput, 'new@mail.com');
+      expect(errorMessage).not.toBeInTheDocument();
+    });
+    it('clears authentication fail message when password field is changed', async () => {
+      setup();
+      userEvent.click(button);
+      const errorMessage = await screen.findByText('Incorrect credentials');
+      userEvent.type(passwordInput, 'newP4ss');
+      expect(errorMessage).not.toBeInTheDocument();
+    });
+    it('stores id, username and image in storage', async () => {
+      server.use(loginSuccess);
+      setup('user5@mail.com');
+      userEvent.click(button);
+      const spinner = screen.queryByRole('status');
+      await waitForElementToBeRemoved(spinner);
+      const storedState = storage.getItem('auth');
+      const objectFields = Object.keys(storedState);
+      expect(objectFields.includes('id')).toBeTruthy();
+      expect(objectFields.includes('username')).toBeTruthy();
+      expect(objectFields.includes('image')).toBeTruthy();
+    });
+    it('stores authorization header value in storage', async () => {
+      server.use(loginSuccess);
+      setup('user5@mail.com');
+      userEvent.click(button);
+      const spinner = screen.queryByRole('status');
+      await waitForElementToBeRemoved(spinner);
+      const storedState = storage.getItem('auth');
+      expect(storedState.header).toBe('Bearer abcdefgh');
+    });
+  });
+  describe('Internationalization', () => {
+    let turkishToggle;
+    const setup = () => {
+      render(<LoginPage />);
+      turkishToggle = screen.getByTitle('Türkçe');
+    };
 
+    it('initially displays all text in English', () => {
+      setup();
+      expect(
+        screen.getByRole('heading', { name: en.login })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: en.login })
+      ).toBeInTheDocument();
+      expect(screen.getByLabelText(en.email)).toBeInTheDocument();
+      expect(screen.getByLabelText(en.password)).toBeInTheDocument();
+    });
+    it('displays all text in Turkish after changing the language', () => {
+      setup();
+      userEvent.click(turkishToggle);
+
+      expect(
+        screen.getByRole('heading', { name: tr.login })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: tr.login })
+      ).toBeInTheDocument();
+      expect(screen.getByLabelText(tr.email)).toBeInTheDocument();
+      expect(screen.getByLabelText(tr.password)).toBeInTheDocument();
+    });
+    it('sets accpet language header to en for outgoing request', async () => {
+      setup();
+      const emailInput = screen.getByLabelText('E-mail');
+      const passwordInput = screen.getByLabelText('Password');
+      userEvent.type(emailInput, 'user100@mail.com');
+      userEvent.type(passwordInput, 'P4ssword');
+      const button = screen.queryByRole('button', { name: 'Login' });
+      userEvent.click(button);
+      const spinner = screen.getByRole('status');
+      await waitForElementToBeRemoved(spinner);
+      expect(acceptLanguageHeader).toBe('en');
+    });
+    it('sets accpet language header to tr for outgoing request', async () => {
+      setup();
+      const emailInput = screen.getByLabelText('E-mail');
+      const passwordInput = screen.getByLabelText('Password');
+      userEvent.type(emailInput, 'user100@mail.com');
+      userEvent.type(passwordInput, 'P4ssword');
+      const button = screen.queryByRole('button', { name: 'Login' });
+      userEvent.click(turkishToggle);
+      userEvent.click(button);
+      const spinner = screen.getByRole('status');
+      await waitForElementToBeRemoved(spinner);
+      expect(acceptLanguageHeader).toBe('tr');
+    });
   });
 });
